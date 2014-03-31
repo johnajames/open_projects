@@ -1,0 +1,20 @@
+Applied Software Engineering
+
+what happens after / during design
+
+testing debugging maintaining programs
+
+How to review code, 
+
+How to debug
+
+Source control, testing , debugging
+
+Things go wrong
+
+ways to avoid bugs, ways to find bugs
+
+books for applied software engineering
+
+build, test, and debug, real software
+learn to play by playing
