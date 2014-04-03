@@ -6,6 +6,8 @@ import sys
 from numpy import * 
 import scipy as sp
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D 
+from matplotlib import cm
 
 def hypothesis(X,theta):
 	return X.dot(theta)
@@ -84,15 +86,32 @@ theta = zeros((2,1))
 iterations = 1500
 alpha = 0.01
 
-cost = computeCost(X,Y,theta)
-hyp = hypothesis(X,theta)
-descent = gradientDescent(X,Y,theta,alpha,iterations)
+theta = gradientDescent(X,Y,theta,alpha,iterations)
+predict1 = array([1,3.5]).dot(theta)
+predict2 = array([1,7]).dot(theta)
 
-# print X
-# print Y
-# print theta
-# print hyp
-# print cost
+# plot(X[:,1],Y)
+# plt.plot(X[:,1],X.dot(theta),'b-')
+# plt.show(block=True)
 
-print gradientDescentLoop(X,Y,theta,alpha,iterations)
-print descent
+theta0_vals = linspace(-10, 10, 100)
+theta1_vals = linspace(-4, 4, 100)
+
+J_vals = zeros((len(theta0_vals), len(theta1_vals)), dtype=float64)
+for i, v0 in enumerate(theta0_vals):
+	for j, v1 in enumerate(theta1_vals):
+		theta = array((theta0_vals[i], theta1_vals[j])).reshape(2, 1)
+		J_vals[i, j] = computeCost(X, Y, theta)
+
+R, P = meshgrid(theta0_vals,theta1_vals)
+
+fig = plt.figure()
+ax = fig.gca(projection='3d')
+ax.plot_surface(R,P,J_vals)
+plt.show(block=True)
+
+fig = plt.figure()
+ax = fig.gca(projection='3d')
+plt.contourf(R, P, J_vals, logspace(-2, 3, 20))
+plt.show(block=True)
+
