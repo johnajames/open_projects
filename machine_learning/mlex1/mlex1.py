@@ -15,6 +15,41 @@ def computeCost(X,Y,theta):
 	term = hypothesis(X,theta) - Y
 	return (term.T.dot(term) / (2 * m))[0,0]
 
+def gradientDescent(X,Y,theta,alpha,iterations):
+	gradient = copy(theta)
+	m = len(Y)
+
+	for count in range(0,iterations):
+		inner_sum = X.T.dot(hypothesis(X,gradient) -Y)
+		gradient -= alpha / m * inner_sum
+
+	return gradient
+
+def gradientDescentLoop(X,Y,theta,alpha,iterations):
+	gradient = copy(theta)
+	m = len(Y)
+	n = shape(X)[1]
+
+	for count in range(0,iterations):
+		# gets inner sums
+		cumulative_innersum = [0 for x in range(0,n)]
+
+		for j in range(0,n):
+			for i in range(0,m):
+				term = (hypothesis(X[i],gradient)-Y[i])
+				cumulative_innersum[j] += X[i,j] * (term)
+
+		for j in range(0,n):
+			gradient[j] = gradient[j] - cumulative_innersum[j] * (alpha / m)
+
+	return gradient
+
+
+def plot(X,Y):
+	plt.plot(X,Y,'rx',markersize=3)
+	plt.ylabel("Profit in $10,000's")
+	plt.xlabel("Population of city in 10,0")
+
 # load and assign initial data
 # data has dimension n rows = 2 columns
 data = genfromtxt("ex1data1.txt",delimiter=",")
@@ -50,6 +85,14 @@ iterations = 1500
 alpha = 0.01
 
 cost = computeCost(X,Y,theta)
+hyp = hypothesis(X,theta)
+descent = gradientDescent(X,Y,theta,alpha,iterations)
 
-print cost
+# print X
+# print Y
+# print theta
+# print hyp
+# print cost
 
+print gradientDescentLoop(X,Y,theta,alpha,iterations)
+print descent
