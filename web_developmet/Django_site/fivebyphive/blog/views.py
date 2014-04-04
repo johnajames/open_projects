@@ -1,0 +1,10 @@
+from django.shortcuts import render_to_response
+
+# Create your views here.
+from blog.models import posts
+
+# define home request takes request statement
+# as argument
+def home(request):
+	entries = posts.objects.all()[:10] # represents first 10 blog posts
+	return render_to_response('index.html',{'posts':entries})
