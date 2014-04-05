@@ -1,0 +1,82 @@
+---------------Regression - predicts a real value output based on inputs----------------
+
+also be used in classification
+classification - discrete valued output (basically 1 or 0 / True or False) 
+
+conventions
+given a training set = set of variables
+m = # of training examples
+x's = input variables - features
+y's = output variables - target
+(x,y) = training example
+(xi,yi) = ith training example (i=index into training set)
+
+Training set
+	v
+	v
+	v
+Learning Algorithm (job of the learning algorithm is to output the function (hypothesis) )
+	v
+	v
+	v
+	
+	H >>>> estimated Price
+	^
+	^
+	^
+Hypothesis (takes input for example given a size what will the estimated price be)
+(h maps from x's to y's)	
+(size / volume /etc.)
+
+
+How do we represent H(hypothesis)?
+h𝛩(x) = 𝛩0 + 𝛩1(x) shorthand: h(x) (hypothesis is a string line funciton in this case)
+simple best fit function = linear regression with one variable
+
+what are the 𝛩's? 𝛩's represent parameters 
+our goal with linear regression is to come up with values for 
+𝛩1 and 𝛩0 that provids a best fit for the data
+We will do this by minimizing 𝛩0 and 𝛩1 - this is accomplished
+by minimized the squared difference between the output of the hypothesis and the actual value y
+1/2m(from i to m)∑(h𝛩(xi)-yi)^2
+
+this is what is called the Cost Function = J(𝛩0,𝛩1) = 1/2m(from i to m)∑(h𝛩(xi)-yi)^2
+goal is to minimuze over J(𝛩0,𝛩1) 
+this is referred to as squared error (most commonly used for regression problems)
+
+
+Cost Function - How to fit the best possible straight line to your data
+
+
+----------------Cost Function Intuition------------------
+hypothesis:h𝛩(x) = 𝛩0+𝛩1(x)
+parameters:(𝛩0,𝛩1)
+cost function:J(𝛩0,𝛩1) = 1/2m(from i to m)∑(h𝛩(xi)-yi)^2
+
+Goal: minimize-J(𝛩0,𝛩1)
+
+for the sake of explanation lets simplify our cost function. 𝛩0 = 0 (lets make our y-intercept = 0 so that for the sake of understanding we will focus on the slope of the hypothesis function)
+
+hypothesis:
+is a function of (x) while
+
+Cost Function
+is a function of (𝛩1[the slope])
+
+-------------------Gradient Descent--------------------
+
+Gradient Descent= an equation for minimizing the cost function. Gradient is more general pupose can be used to minimize an arbitrary function. 
+Let's say we have some function J(𝛩0,...𝛩n) and we want to minimize that function.
+min J(𝛩0,...𝛩n)
+
+The idea is to keep changing (𝛩1,𝛩1) to reduce J(𝛩1,𝛩1)
+until you hopefully end up at a minimum
+
+Gradient Descent Algorithm
+repeat until convergence
+𝛩j := 𝛩j - α ∂/∂(𝛩j) J(𝛩0,𝛩1) 
+when executing the algorithm ensure you simultaneously update 𝛩0, and 𝛩1
+
+
+
+

@@ -53,7 +53,7 @@ another form of this = probability distribution
 In machine learning you have different types of learning models:
 
 Supervised learning: Included in your dataset are known points. ergo for each input
-x you have an output y.
+x you have an output y. This combination is used for future prediction.
 
 Unsupervised learning: You have a list of data but it is up to you to decipher 
 the meaning. ergo for each x you must create a y
