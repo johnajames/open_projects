@@ -73,10 +73,31 @@ The idea is to keep changing (𝛩1,𝛩1) to reduce J(𝛩1,𝛩1)
 until you hopefully end up at a minimum
 
 Gradient Descent Algorithm
+
 repeat until convergence
 𝛩j := 𝛩j - α ∂/∂(𝛩j) J(𝛩0,𝛩1) 
 when executing the algorithm ensure you simultaneously update 𝛩0, and 𝛩1
 
+simultanous update:
+means you update both (𝛩1,𝛩1) before running gradient descent again
+temp0 := 𝛩0 -α ∂/∂(𝛩j) J(𝛩0,𝛩1)
+temp1 := 𝛩1 -α ∂/∂(𝛩j) J(𝛩0,𝛩1)
+𝛩0 := temp0
+𝛩1 := temp1
+then repeat (this is the correct form)
+
+-------------------- Gradient Descent Intuition -----------------
+Dive into learning rate (α)
+Dive into derivative (∂/∂(𝛩j) J(𝛩0,𝛩1))
+
+Like before lets minimize our example to use only one parameter
+Given a cost function: Derivative determins slope of a line at a point
+Alpha is the size of the step gradient takes when checking the slope of a tangent
+
+Gradient Descent therefore aims to step in a direction that aims to minimize the cost function.
+
+-----------------Gradient Descent for Linear Regression ----------------
+Combining Gradient Descent with the cost function to get our first learning algorithm.
 
 
 
