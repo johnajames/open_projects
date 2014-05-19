@@ -1,117 +1,170 @@
-# This is the first exercise in the machine learning course. 
-# This excercise implements an machine learning example 
-# using linear regression. 
+#!/usr/local/Cellar/python/2.7.6/bin/python
+# -*- coding: utf-8 -*-
+
+'''Standard python modules'''
 import sys
 
-from numpy import * 
-import scipy as sp
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D 
-from matplotlib import cm
+'''For scientific computing'''
+from numpy import *
+import scipy
 
-def hypothesis(X,theta):
-	return X.dot(theta)
-
-def computeCost(X,Y,theta):
-	m = len(Y)
-	term = hypothesis(X,theta) - Y
-	return (term.T.dot(term) / (2 * m))[0,0]
-
-def gradientDescent(X,Y,theta,alpha,iterations):
-	gradient = copy(theta)
-	m = len(Y)
-
-	for count in range(0,iterations):
-		inner_sum = X.T.dot(hypothesis(X,gradient) -Y)
-		gradient -= alpha / m * inner_sum
-
-	return gradient
-
-def gradientDescentLoop(X,Y,theta,alpha,iterations):
-	gradient = copy(theta)
-	m = len(Y)
-	n = shape(X)[1]
-
-	for count in range(0,iterations):
-		# gets inner sums
-		cumulative_innersum = [0 for x in range(0,n)]
-
-		for j in range(0,n):
-			for i in range(0,m):
-				term = (hypothesis(X[i],gradient)-Y[i])
-				cumulative_innersum[j] += X[i,j] * (term)
-
-		for j in range(0,n):
-			gradient[j] = gradient[j] - cumulative_innersum[j] * (alpha / m)
-
-	return gradient
+'''For plotting'''
+from matplotlib import pyplot, cm
+from mpl_toolkits.mplot3d import Axes3D
 
 
-def plot(X,Y):
-	plt.plot(X,Y,'rx',markersize=3)
-	plt.ylabel("Profit in $10,000's")
-	plt.xlabel("Population of city in 10,0")
-
-# load and assign initial data
-# data has dimension n rows = 2 columns
-data = genfromtxt("ex1data1.txt",delimiter=",")
-
-# preprocess and clean data
-# separate dimensions into two vectors of equal size
-# X = population
-# Y = profit
-X = data[:,0] # first column
-Y = data[:,1] # second column
-m = len(Y) # m = number of training examples
-Y = Y.reshape(m,1)
-
-X = c_[ones((m,1)),X]
-
-# check data with a plot
-# plt.scatter(X,Y, marker="x", c="red") # first argument = x-axis , second argument = y-axis
-# plt.title ("Profit vs Population for restaurant") # title
-# plt.xlabel("Population") # xlabel
-# plt.ylabel("Profit") #ylabel
-# plt.autoscale(tight=True) # automatically scales graph to data
-#plt.grid() # shows grid on graph
-#plt.show() # necessary to print graph
+def part1():
+    A = eye(5)
+    print A
 
 
-# prep data and variables for linear regression
-# X = np.reshape(X,(m,1)) # reshape X to a vector
-# X = np.c_[np.ones((m,1)),X] # insert column of ones
+def hypothesis(X, theta):
+    """Hypothesis function for linear regression
+    this should be inlined code, but it's here for clear representation purpsoes
+    """
+    return X.dot(theta)
 
-theta = zeros((2,1))
 
-iterations = 1500
-alpha = 0.01
+def computeCostLoop(X, y, theta):
+    """Compute cost but in the slower loop method, in order to show how the
+    pre-vectorization algorithm initially works. Always start with loop version first
+    and code the vectorized version later
+    """
+    m = len(y)  # or m = shape(y)[0], since y is 1D
 
-theta = gradientDescent(X,Y,theta,alpha,iterations)
-predict1 = array([1,3.5]).dot(theta)
-predict2 = array([1,7]).dot(theta)
+    cumulative_sum = 0
+    for i in range(0, m):
+        cumulative_sum += (hypothesis(X[i], theta) - y[i]) ** 2
+    cumulative_sum = (1.0 / (2 * m)) * cumulative_sum
+    return cumulative_sum
 
-# plot(X[:,1],Y)
-# plt.plot(X[:,1],X.dot(theta),'b-')
-# plt.show(block=True)
 
-theta0_vals = linspace(-10, 10, 100)
-theta1_vals = linspace(-4, 4, 100)
+def computeCost(X, y, theta):
+    """Compute cost, vectorized version"""
+    m 	 = len(y)
+    term = hypothesis(X, theta) - y
+    # sum( term**2 ) in this case ~= term.T.dot( term )
+    return (term.T.dot(term) / (2 * m))[0, 0]
 
-J_vals = zeros((len(theta0_vals), len(theta1_vals)), dtype=float64)
-for i, v0 in enumerate(theta0_vals):
-	for j, v1 in enumerate(theta1_vals):
-		theta = array((theta0_vals[i], theta1_vals[j])).reshape(2, 1)
-		J_vals[i, j] = computeCost(X, Y, theta)
 
-R, P = meshgrid(theta0_vals,theta1_vals)
+def gradientDescentLoop(X, y, theta, alpha, iterations):
+    """Gradient descent in loop version"""
+    grad = copy(theta)
+    m 	 = len(y)
+    n 	 = shape(X)[1]
 
-fig = plt.figure()
-ax = fig.gca(projection='3d')
-ax.plot_surface(R,P,J_vals)
-plt.show(block=True)
+    for counter in range(0, iterations):
+        # create n number of cumulative inner sums
+        cum_sum = [0 for x in range(0, n)]
 
-fig = plt.figure()
-ax = fig.gca(projection='3d')
-plt.contourf(R, P, J_vals, logspace(-2, 3, 20))
-plt.show(block=True)
+        for j in range(0, n):
+            for i in range(0, m):
+                term 		= (hypothesis(X[i], grad) - y[i])
+                cum_sum[j] += X[i, j] * (term)
 
+        # assign new values for each gradient, this should be separate from the loop above
+        # in order to achieve simulataneous update effect
+        for j in range(0, n):
+            grad[j] = grad[j] - cum_sum[j] * (alpha / m)
+
+    return grad
+
+
+def gradientDescent(X, y, theta, alpha, iterations):
+    """Vectorized gradient descent"""
+    grad = copy(theta)
+    m 	 = len(y)
+
+    for counter in range(0, iterations):
+        inner_sum = X.T.dot(hypothesis(X, grad) - y)
+        grad 	 -= alpha / m * inner_sum
+
+    return grad
+
+
+def plot(X, y):
+    """Create a plot out of X and y data, X should exclude the intercept units.
+    Call pyplot.show(block=True) in order to show the plot window"""
+    pyplot.plot(X, y, 'rx', markersize=5 )
+    pyplot.ylabel('Profit in $10,000s')
+    pyplot.xlabel('Population of City in 10,000s')
+
+
+def part2_1():
+    data = genfromtxt( "ex1data1.txt", delimiter=',')
+    X, y = data[:, 0], data[:, 1]
+    m 	 = len(y)
+    y 	 = y.reshape(m, 1)
+
+    plot(X, y)
+    pyplot.show(block=True)
+
+
+def part2_2():
+    data = genfromtxt( 'ex1data1.txt', delimiter=',')
+    X, y = data[:, 0], data[:, 1]
+    m 	 = len(y)
+    y 	 = y.reshape(m, 1)
+
+    X 			= c_[ones((m, 1)), X]
+    theta 		= zeros((2, 1))
+    iterations 	= 1500
+    alpha 		= 0.01
+
+    cost 	= computeCost(X, y, theta)  # should be 32.07
+    theta 	= gradientDescent(X, y, theta, alpha, iterations)
+    print cost
+    print theta
+
+    predict1 = array([1, 3.5]).dot(theta)
+    predict2 = array([1, 7]).dot(theta)
+    print predict1
+    print predict2
+
+    plot(X[:, 1], y)
+    pyplot.plot(X[:, 1], X.dot(theta), 'b-')
+    pyplot.show(block=True)
+
+
+def part2_4():
+    data = genfromtxt('ex1data1.txt', delimiter=',')
+    X, y = data[:, 0], data[:, 1]
+    m 	 = len(y)
+    y 	 = y.reshape(m, 1)
+    X 	 = c_[ones((m, 1)), X]
+
+    theta0_vals = linspace(-10, 10, 100)
+    theta1_vals = linspace(-4, 4, 100)
+
+    J_vals = zeros((len(theta0_vals), len(theta1_vals)), dtype=float64)
+    for i, v0 in enumerate(theta0_vals):
+        for j, v1 in enumerate(theta1_vals):
+            theta 		 = array((theta0_vals[i], theta1_vals[j])).reshape(2, 1)
+            J_vals[i, j] = computeCost(X, y, theta)
+
+    R, P = meshgrid(theta0_vals, theta1_vals)
+
+    fig = pyplot.figure()
+    ax 	= fig.gca(projection='3d')
+    ax.plot_surface(R, P, J_vals)
+    pyplot.show(block=True)
+
+    fig = pyplot.figure()
+    ax 	= fig.gca(projection='3d')
+    pyplot.contourf(R, P, J_vals, logspace(-2, 3, 20))
+    pyplot.show(block=True)
+
+
+def main():
+    set_printoptions(precision=6, linewidth=200)
+
+    part1()
+    part2_1()
+    part2_2()
+    part2_4()
+
+    sys.exit()
+
+
+if __name__ == '__main__':
+    main()
